@@ -160,7 +160,7 @@ dump_boot;
 
 # init.g3.rc
 backup_file init.g3.rc;
-append_file init.g3.rc "nebulakernel-post_boot" init.g3.patch;
+append_file init.g3.rc "nebulakernel-perf_boot" init.g3.patch;
 
 # end ramdisk changes
 
