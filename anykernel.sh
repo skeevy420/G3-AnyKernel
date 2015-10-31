@@ -150,7 +150,7 @@ replace_file() {
 
 ## AnyKernel permissions
 # set permissions for included files
-chmod -R 755 $ramdisk
+chmod -R 755 $ramdisk;
 
 
 ## AnyKernel install

@@ -1,5 +1,5 @@
-chmod +x 0700 /sbin/nebulaketnel-perf_boot.sh
-chmod +x 0700 /sbin/nebulaketnel-post_boot.sh
+chmod +x 0755 /sbin/nebulaketnel-perf_boot.sh
+chmod +x 0755 /sbin/nebulaketnel-post_boot.sh
 
 service nebulakernel-perf-boot /system/bin/sh /sbin/nebulakernel-perf_boot.sh
     class core
@@ -12,8 +12,8 @@ service nebulakernel-post-boot /system/bin/sh /sbin/nebulakernel-post_boot.sh
     user root
     disabled
     oneshot
-    
-start nebulakernel-pref-boot
+
+start nebulakernel-perf-boot
 
 on property:sys.boot_completed=1
     start nebulakernel-post-boot
