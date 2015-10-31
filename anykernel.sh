@@ -99,7 +99,7 @@ replace_string() {
 insert_line() {
   if [ -z "$(grep "$2" $1)" ]; then
     case $3 in
-      before) offset0;;
+      before) offset=0;;
       after) offset=1;;
     esac;
     line=$((`grep -n "$4" $1 | cut -d: -f1` + offset));
@@ -160,7 +160,7 @@ dump_boot;
 
 # init.g3.rc
 backup_file init.g3.rc;
-append_file init.g3.rc "onrestart restart netd" init.g3.patch;
+append_file init.g3.rc "nebulakernel-post_boot" init.g3.patch;
 
 # end ramdisk changes
 
