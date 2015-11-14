@@ -3,13 +3,13 @@
 
 ## AnyKernel setup
 # EDIFY properties
-kernel.string=Nebula Kernel Rev10.1-OC3 By Eliminater74
+kernel.string=Nebula Kernel Rev10.2.2-OC3 By Eliminater74
 do.devicecheck=1
 do.initd=1
 do.modules=0
 do.cleanup=0
-device.name1=vs985
-device.name2=LG-vs985
+device.name1=d851
+device.name2=LG-d851
 device.name3=LG
 device.name4=LGE
 device.name5=LG G3
@@ -160,7 +160,7 @@ dump_boot;
 
 # init.g3.rc
 backup_file init.g3.rc;
-append_file init.g3.rc "nebulakernel-post_boot" init.g3.patch;
+append_file init.g3.rc "nebula-post_boot" init.g3.patch;
 
 # end ramdisk changes
 
