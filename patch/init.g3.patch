@@ -3,6 +3,7 @@ service nebula-post-boot /system/bin/sh /sbin/nebula-post_boot.sh
     user root
     disabled
     oneshot
+write /sys/class/kgsl/kgsl-3d0/max_gpuclk 657500000
 
 on property:sys.boot_completed=1
     start nebula-post-boot

@@ -179,7 +179,7 @@ backup_file init.g3.rc;
 append_file init.g3.rc "nebula-post_boot" init.g3.patch;
 
 # Disable QCOM Thermal Driver
-insert_line init.qcom-common.rc "#Disable QCOM Thermal" after "service thermal-engine /system/bin/thermal-engine" "   #Disable QCOM Thermal\n   disabled\n"
+#insert_line init.qcom-common.rc "#Disable QCOM Thermal" after "service thermal-engine /system/bin/thermal-engine" "   #Disable QCOM Thermal\n   disabled\n"
 
 # add frandom compatibility
 backup_file ueventd.rc;

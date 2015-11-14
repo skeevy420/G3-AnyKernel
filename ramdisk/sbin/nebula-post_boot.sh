@@ -65,7 +65,7 @@ echo 1728000 > /sys/kernel/msm_limiter/suspend_max_freq
 ###################################################################
 ### GPU CLK: Set default to 657 ###
 echo "-- Custom GPU Max Clock Set --" | tee /dev/kmsg
-#echo 657500000 > /sys/class/kgsl/kgsl-3d0/max_gpuclk﻿
+echo 657500000 > /sys/class/kgsl/kgsl-3d0/max_gpuclk﻿
 echo 657500000 > /sys/devices/fdb00000.qcom,kgsl-3d0/devfreq/fdb00000.qcom,kgsl-3d0/max_freq
 
 ############################
@@ -107,17 +107,6 @@ echo 1024 > /sys/block/mmcblk0/bdi/read_ahead_kb
 #
 echo "-- Custom Governor Tunings --" | tee /dev/kmsg
 
-echo interactive > /sys/kernel/msm_limiter/scaling_governor_0
-echo 20000 1400000:40000 1700000:20000 > /sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay
-echo 90 > /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load
-echo 1190400 > /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq
-echo 1 > /sys/devices/system/cpu/cpufreq/interactive/io_is_busy
-echo 85 1500000:90 1800000:70 > /sys/devices/system/cpu/cpufreq/interactive/target_loads
-echo 40000 > /sys/devices/system/cpu/cpufreq/interactive/min_sample_time
-echo 30000 > /sys/devices/system/cpu/cpufreq/interactive/timer_rate
-echo 100000 > /sys/devices/system/cpu/cpufreq/interactive/max_freq_hysteresis
-echo 30000 > /sys/devices/system/cpu/cpufreq/interactive/timer_slack
-
 echo ondemand > /sys/kernel/msm_limiter/scaling_governor_0
 echo 95 > /sys/devices/system/cpu/cpufreq/ondemand/up_threshold
 echo 50000 > /sys/devices/system/cpu/cpufreq/ondemand/sampling_rate
@@ -153,6 +142,21 @@ echo 70 > /sys/devices/system/cpu/cpufreq/smartmax/max_cpu_load
 echo 30 > /sys/devices/system/cpu/cpufreq/smartmax/min_cpu_load
 echo 1497600 > /sys/devices/system/cpu/cpufreq/smartmax/touch_poke_freq
 echo 1497600 > /sys/devices/system/cpu/cpufreq/smartmax/boost_freq
+
+### Default Governor on Boot ###
+echo interactive > /sys/kernel/msm_limiter/scaling_governor_0
+echo interactive > /sys/kernel/msm_limiter/scaling_governor_1
+echo interactive > /sys/kernel/msm_limiter/scaling_governor_2
+echo interactive > /sys/kernel/msm_limiter/scaling_governor_3
+echo 20000 1400000:40000 1700000:20000 > /sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay
+echo 90 > /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load
+echo 1190400 > /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq
+echo 1 > /sys/devices/system/cpu/cpufreq/interactive/io_is_busy
+echo 85 1500000:90 1800000:70 > /sys/devices/system/cpu/cpufreq/interactive/target_loads
+echo 40000 > /sys/devices/system/cpu/cpufreq/interactive/min_sample_time
+echo 30000 > /sys/devices/system/cpu/cpufreq/interactive/timer_rate
+echo 100000 > /sys/devices/system/cpu/cpufreq/interactive/max_freq_hysteresis
+echo 30000 > /sys/devices/system/cpu/cpufreq/interactive/timer_slack
 
 ############################
 # LMK Tweaks
