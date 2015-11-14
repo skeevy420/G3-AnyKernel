@@ -158,9 +158,48 @@ dump_boot;
 
 # begin ramdisk changes
 
+# insert initd scripts
+cp -fp $patch/init.d/* $initd
+chmod -R 766 $initd
+
+# mpdecsion binary
+#mv $bindir/mpdecision-rm $bindir/mpdecision
+
+# adb secure
+backup_file default.prop;
+replace_string default.prop "ro.adb.secure=0" "ro.adb.secure=1" "ro.adb.secure=0";
+replace_string default.prop "ro.secure=0" "ro.secure=1" "ro.secure=0";
+
+# panel and gamma
+backup_file init.qcom-common.rc
+replace_line init.qcom-common.rc "chown system graphics /sys/devices/virtual/graphics/fb0/panel_calibration" "    chown system system /sys/devices/virtual/graphics/fb0/panel_calibration";
+
 # init.g3.rc
 backup_file init.g3.rc;
 append_file init.g3.rc "nebula-post_boot" init.g3.patch;
+
+# Disable QCOM Thermal Driver
+insert_line init.qcom-common.rc "#Disable QCOM Thermal" after "service thermal-engine /system/bin/thermal-engine" "   #Disable QCOM Thermal\n   disabled\n"
+
+# add frandom compatibility
+backup_file ueventd.rc;
+insert_line ueventd.rc "frandom" after "urandom" "/dev/frandom              0666   root       root\n";
+insert_line ueventd.rc "erandom" after "urandom" "/dev/erandom              0666   root       root\n";
+
+backup_file file_contexts;
+insert_line file_contexts "frandom" after "urandom" "/dev/frandom				u:object_r:frandom_device:s0\n";
+insert_line file_contexts "erandom" after "urandom" "/dev/erandom				u:object_r:erandom_device:s0\n";
+
+# Add F2FS Support for /data and /cache since its can be used on ANY rom
+#backup_file fstab.g3
+#replace_file fstab.g3 750 fstab.g3;
+
+# xPrivacy
+# Thanks to @Shadowghoster & @@laufersteppenwolf
+param=$(grep "xprivacy" service_contexts)
+if [ -z $param ]; then
+    echo -ne "xprivacy453                               u:object_r:system_server_service:s0\n" >> service_contexts
+fi
 
 # end ramdisk changes
 
