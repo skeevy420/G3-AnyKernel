@@ -170,16 +170,16 @@ backup_file default.prop;
 replace_string default.prop "ro.adb.secure=0" "ro.adb.secure=1" "ro.adb.secure=0";
 replace_string default.prop "ro.secure=0" "ro.secure=1" "ro.secure=0";
 
-# panel and gamma
-backup_file init.qcom-common.rc
-replace_line init.qcom-common.rc "chown system graphics /sys/devices/virtual/graphics/fb0/panel_calibration" "    chown system system /sys/devices/virtual/graphics/fb0/panel_calibration";
+# Change Log Level 
+#backup_file init.rc
+#replace_line init.rc "loglevel 3" "    loglevel 8";
 
 # init.g3.rc
 backup_file init.g3.rc;
 append_file init.g3.rc "nebula-post_boot" init.g3.patch;
 
 # Disable QCOM Thermal Driver
-#insert_line init.qcom-common.rc "#Disable QCOM Thermal" after "service thermal-engine /system/bin/thermal-engine" "   #Disable QCOM Thermal\n   disabled\n"
+insert_line init.g3.rc "#Disable QCOM Thermal" after "service thermal-engine /system/bin/thermal-engine" "   #Disable QCOM Thermal\n   disabled\n"
 
 # add frandom compatibility
 backup_file ueventd.rc;

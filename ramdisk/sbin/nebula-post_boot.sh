@@ -1,25 +1,53 @@
 #!/system/bin/sh
-#################################################################################
-### Updated: 11/14/2015 : Added CPU Default 657 Since we now OC 700mhz        ###
-### Added: Extra Stuff, Fixed some things.                                    ###
-###                                                                           ###
-###                                                                           ###
-###                                                                           ###
-###                                                                           ###
-###                                                                           ###
-###                                                                           ###
-###                                                                           ###
-###                                                                           ###
-#################################################################################
+###########################################################################################
+###          -=[ The Nebula Project: The NebulaKernel Post Boot Script ]=-              ###
+### ----------------------------------------------------------------------------------- ###
+### UpDated: 11/15/2015    Custom Kernel Settings                                       ###
+###                                                                                     ###
+###-------------------------------------------------------------------------------------###
+### CPU Default 657 Since we now OC 700mhz                                              ###
+### Tweak Background Writeout                                                           ###
+### ZRAM Settings (Disabled for now)                                                    ###
+### MSM_Hotplug Settings                                                                ###
+### MSM Limiter                                                                         ###
+### GPU CLK: Set default to 657                                                         ###
+### MSM Thermal (Intelli-Thermal v2)                                                    ###
+### Alucard Touch Boost Settings                                                        ###
+### Power Effecient Workqueues (Enable for battery)                                     ###
+### Scheduler and Read Ahead                                                            ###
+### Governor Tunings                                                                    ###
+### LMK Tweaks, MISC Tweaks, SuperUser Tweaks (TESTING)                                 ###
+### Disable Debugging                                                                   ###
+### disable sysctl.conf to prevent ROM interference with tunables                       ###
+### disable the PowerHAL since there is now a kernel-side touch boost implemented       ###
+### backup and replace Host AP Daemon for working Wi-Fi tether                          ###
+###        on 3.4 kernel Wi-Fi drivers (Disabled For Now)                               ###
+### fix permissions for any included governors (and older underlying ramdisks)          ###
+### lmk tweaks for fewer empty background processes                                     ###
+### lmk whitelist for common launchers and increase launcher priority                   ###
+### wait for systemui and increase its priority                                         ###
+### remount sysfs+sdcard with noatime,nodiratime since that's all they accept           ###
+###########################################################################################
 BB=/sbin/bb/busybox
 
-#################################################################
-# Custom Kernel Settings for Nebula Kernel
-# Based on Render Script by RenderBroken & 777Kernel
-#
 echo "-----------------------------------------------------------" | tee /dev/kmsg
 echo "[NebulaKernel] Boot Script Started" | tee /dev/kmsg
 stop mpdecision
+
+# disable sysctl.conf to prevent ROM interference with tunables
+$bb mount -o rw,remount /system;
+$bb [ -e /system/etc/sysctl.conf ] && $bb mv -f /system/etc/sysctl.conf /system/etc/sysctl.conf.dvbak;
+
+# disable the PowerHAL since there is now a kernel-side touch boost implemented
+$bb [ -e /system/lib/hw/power.so.dvbak ] || $bb cp /system/lib/hw/power.so /system/lib/hw/power.so.dvbak;
+$bb [ -e /system/lib/hw/power.so ] && $bb rm -f /system/lib/hw/power.so;
+
+# backup and replace Host AP Daemon for working Wi-Fi tether on 3.4 kernel Wi-Fi drivers
+#$bb [ -e /system/bin/hostapd.dvbak ] || $bb cp /system/bin/hostapd /system/bin/hostapd.dvbak;
+#$bb cp -f /sbin/hostapd /system/bin/;
+#$bb chown root.shell /system/bin/hostapd;
+#$bb chmod 755 /system/bin/hostapd;
+
 
 ############################
 # Tweak Background Writeout
@@ -39,7 +67,6 @@ echo 10 > /proc/sys/vm/swappiness
 ############################
 # MSM_Hotplug Settings
 #
-echo "-- Custom HotPlug Settings --" | tee /dev/kmsg
 echo 1 > /sys/module/msm_hotplug/min_cpus_online
 echo 2 > /sys/module/msm_hotplug/cpus_boosted
 echo 500 > /sys/module/msm_hotplug/down_lock_duration
@@ -51,7 +78,6 @@ echo 1 > /sys/module/msm_hotplug/max_cpus_online_susp
 ############################
 # MSM Limiter
 #
-echo "-- Custom msm_limiter Settings --" | tee /dev/kmsg
 echo 300000 > /sys/kernel/msm_limiter/suspend_min_freq_0
 echo 300000 > /sys/kernel/msm_limiter/suspend_min_freq_1
 echo 300000 > /sys/kernel/msm_limiter/suspend_min_freq_2
@@ -64,49 +90,34 @@ echo 1728000 > /sys/kernel/msm_limiter/suspend_max_freq
 
 ###################################################################
 ### GPU CLK: Set default to 657 ###
-echo "-- Custom GPU Max Clock Set --" | tee /dev/kmsg
 echo 657500000 > /sys/class/kgsl/kgsl-3d0/max_gpuclk﻿
 echo 657500000 > /sys/devices/fdb00000.qcom,kgsl-3d0/devfreq/fdb00000.qcom,kgsl-3d0/max_freq
 
 ############################
 # MSM Thermal (Intelli-Thermal v2)
 #
-echo "-- Custom msm_thermal enabled --" | tee /dev/kmsg
 echo 0 > /sys/module/msm_thermal/core_control/enabled
 echo 1 > /sys/module/msm_thermal/parameters/enabled
 
 ############################
 # Alucard Touch Boost Settings
 #
-echo "-- Custom Alucard Touch Boost Settings --" | tee /dev/kmsg
 echo 1497600 > /sys/module/alu_t_boost/parameters/input_boost_freq
-
-############################
-# Tweak Background Writeout
-#
-echo 200 > /proc/sys/vm/dirty_expire_centisecs
-echo 40 > /proc/sys/vm/dirty_ratio
-echo 5 > /proc/sys/vm/dirty_background_ratio
-echo 10 > /proc/sys/vm/swappiness
 
 ############################
 # Power Effecient Workqueues (Enable for battery)
 #
-echo "-- Custom Power effecient Workgueues Enabled --" | tee /dev/kmsg
 echo 1 > /sys/module/workqueue/parameters/power_efficient
 
 ############################
 # Scheduler and Read Ahead
 #
-echo "-- Custom Scheduler and Read Ahead Settings --" | tee /dev/kmsg
 echo zen > /sys/block/mmcblk0/queue/scheduler
 echo 1024 > /sys/block/mmcblk0/bdi/read_ahead_kb
 
 ############################
 # Governor Tunings
 #
-echo "-- Custom Governor Tunings --" | tee /dev/kmsg
-
 echo ondemand > /sys/kernel/msm_limiter/scaling_governor_0
 echo 95 > /sys/devices/system/cpu/cpufreq/ondemand/up_threshold
 echo 50000 > /sys/devices/system/cpu/cpufreq/ondemand/sampling_rate
@@ -161,7 +172,6 @@ echo 30000 > /sys/devices/system/cpu/cpufreq/interactive/timer_slack
 ############################
 # LMK Tweaks
 #
-echo "-- Custom LMK Tweaks --" | tee /dev/kmsg
 echo 2560,4096,8192,16384,24576,32768 > /sys/module/lowmemorykiller/parameters/minfree
 echo 32 > /sys/module/lowmemorykiller/parameters/cost
 
@@ -203,6 +213,65 @@ if [ -e /system/lib/libsupol.so ]; then
 	"allow atfwd property_socket sock_file write" \
 	"allow debuggerd app_data_file dir search"
 fi;
+
+# remount sysfs+sdcard with noatime,nodiratime since that's all they accept
+$bb mount -o remount,nosuid,nodev,noatime,nodiratime -t auto /;
+$bb mount -o remount,nosuid,nodev,noatime,nodiratime -t auto /proc;
+$bb mount -o remount,nosuid,nodev,noatime,nodiratime -t auto /sys;
+$bb mount -o remount,nosuid,nodev,noatime,nodiratime -t auto /sys/kernel/debug;
+$bb mount -o remount,nosuid,nodev,noatime,nodiratime -t auto /mnt/shell/emulated;
+for i in /storage/emulated/*; do
+  $bb mount -o remount,nosuid,nodev,noatime,nodiratime -t auto $i;
+  $bb mount -o remount,nosuid,nodev,noatime,nodiratime -t auto $i/Android/obb;
+done;
+
+# fix permissions for any included governors (and older underlying ramdisks)
+governor=reset;
+while sleep 1; do
+  current=`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor`;
+  if [ $governor != $current ]; then
+    governor=$current;
+    for i in /sys/devices/system/cpu/cpufreq/*; do
+      $bb chown system:system $i/*;
+      $bb chmod 664 $i/*;
+    done;
+  fi;
+done&
+
+# lmk tweaks for fewer empty background processes
+minfree=6144,8192,12288,16384,24576,40960;
+lmk=/sys/module/lowmemorykiller/parameters/minfree;
+minboot=`cat $lmk`;
+while sleep 1; do
+  if [ `cat $lmk` != $minboot ]; then
+    [ `cat $lmk` != $minfree ] && echo $minfree > $lmk || exit;
+  fi;
+done&
+
+# lmk whitelist for common launchers and increase launcher priority
+list="com.android.launcher com.google.android.googlequicksearchbox org.adw.launcher org.adwfreak.launcher net.alamoapps.launcher com.anddoes.launcher com.android.lmt com.chrislacy.actionlauncher.pro com.cyanogenmod.trebuchet com.gau.go.launcherex com.gtp.nextlauncher com.miui.mihome2 com.mobint.hololauncher com.mobint.hololauncher.hd com.qihoo360.launcher com.teslacoilsw.launcher com.tsf.shell org.zeam";
+while sleep 60; do
+  for class in $list; do
+    if [ `$bb pgrep $class | head -n 1` ]; then
+      launcher=`$bb pgrep $class`;
+      $bb echo -17 > /proc/$launcher/oom_adj;
+      $bb chmod 100 /proc/$launcher/oom_adj;
+      $bb renice -18 $launcher;
+    fi;
+  done;
+  exit;
+done&
+
+# wait for systemui and increase its priority
+while sleep 1; do
+  if [ `$bb pidof com.android.systemui` ]; then
+    systemui=`$bb pidof com.android.systemui`;
+    $bb renice -18 $systemui;
+    $bb echo -17 > /proc/$systemui/oom_adj;
+    $bb chmod 100 /proc/$systemui/oom_adj;
+    exit;
+  fi;
+done&
 
 ############################
 # Synapse + UKM Support
