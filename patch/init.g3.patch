@@ -1,17 +1,10 @@
-service nebulakernel-perf-boot /system/bin/sh /sbin/nebulakernel-perf_boot.sh
-    class core
-    user root
-    disabled
-    oneshot
-
-service nebulakernel-post-boot /system/bin/sh /sbin/nebulakernel-post_boot.sh
+service nebula-post-boot /system/bin/sh /sbin/nebula-post_boot.sh
     class late_start
     user root
     disabled
     oneshot
 
-start nebulakernel-perf-boot
+write /sys/class/kgsl/kgsl-3d0/max_gpuclk 657500000
 
 on property:sys.boot_completed=1
-    start nebulakernel-post-boot
-    
+    start nebula-post-boot
